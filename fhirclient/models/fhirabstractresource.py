@@ -74,7 +74,7 @@ class FHIRAbstractResource(fhirabstractbase.FHIRAbstractBase):
         self._server = server
     
     @classmethod
-    def read(cls, rem_id, server):
+    def read(cls, rem_id, server, return_raw=False):
         """ Read the resource with the given id from the given server. The
         passed-in server instance must support a `request_json()` method call,
         taking a relative path as first (and only mandatory) argument.
@@ -84,16 +84,20 @@ class FHIRAbstractResource(fhirabstractbase.FHIRAbstractBase):
         :returns: An instance of the receiving class
         """
         if not rem_id:
-            raise Exception("Cannot read resource without remote id")
+            #raise Exception("Cannot read resource without remote id")
+            path = '{}'.format(cls.resource_type)
+        else: 
+            path = '{}/{}'.format(cls.resource_type, rem_id)
+        if return_raw: 
+            return cls.read_from(path, server, return_raw=True)
         
-        path = '{}/{}'.format(cls.resource_type, rem_id)
-        instance = cls.read_from(path, server)
+        #else  
+        instance = cls.read_from(path, server, return_raw=False)
         instance._local_id = rem_id
-        
         return instance
     
     @classmethod
-    def read_from(cls, path, server):
+    def read_from(cls, path, server, return_raw=False):
         """ Requests data from the given REST path on the server and creates
         an instance of the receiving class.
         
@@ -106,10 +110,16 @@ class FHIRAbstractResource(fhirabstractbase.FHIRAbstractBase):
         if server is None:
             raise Exception("Cannot read resource without server instance")
         
+        print(type(server))
         ret = server.request_json(path)
+        if return_raw: 
+            return ret 
+        #else 
         instance = cls(jsondict=ret)
         instance.origin_server = server
         return instance
+
+    
     
     def create(self, server):
         """ Attempt to create the receiver on the given server, using a POST
