@@ -110,7 +110,6 @@ class FHIRAbstractResource(fhirabstractbase.FHIRAbstractBase):
         if server is None:
             raise Exception("Cannot read resource without server instance")
         
-        print(type(server))
         ret = server.request_json(path)
         if return_raw: 
             return ret 

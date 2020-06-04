@@ -1,23 +1,20 @@
 from fhirclient import client
 from pprint import pprint
-from pymongo import MongoClient
 
 settings = {
     'app_id': 'my_web_app',
     'api_base': 'https://r3.smarthealthit.org/'
 }
 smart = client.FHIRClient(settings=settings)
+import fhirclient.models.patient as p
 
-resourceList = [Patient, Organisation, AllergyIntolerance]
-
-for resource in resourceList:  
-    resourceBundle = p.resource.read(rem_id=None, 
-                                     server=smart.server)
+patient = p.Patient.read(rem_id='008076b8-7fba-4645-ba41-0b8ffe10e82b', 
+                         server=smart.server)
 
 patientBundle = p.Patient.read(rem_id=None, 
                                server=smart.server, 
                                return_raw = True)
-pprint(patientBundle['entry'][0])
+pprint(patientBundle.keys)
 
 print(patient.birthDate)
 print(patient.birthDate.isostring)
